@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Pet Information</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="pet-profile.css" />
+    <!-- Converts iPhone HEIC/HEIF photos to a browser-viewable JPEG for preview purposes -->
+    <!--<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js" defer></script>-->
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="pet-container">
+
+            <div class="back-to-profile-link">
+                <a href="/pet-owner-profile" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    My Profile
+                </a>
+            </div>
+
+            <div class="pet-header-menu">
+                <div class="header-left">
+                    <button type="button" class="btn-back" id="btnGoBack">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h3 class="section-header">Pet Information</h3>
+                </div>
+                <div class="btn-submit-container header-buttons">
+                    <button type="submit" class="cta-button-submit" id="btnSubmitTop">
+                        <span id="submitTopLabel">Submit</span>
+                    </button>
+                    <button type="button" class="cta-button-edit header-edit-btn" id="btnEditTop">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validation summary banner -->
+        <div class="validation-summary" id="validationSummary" style="display:none">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Some required fields are missing. Please complete them to continue.</span>
+        </div>
+
+        <div class="form-content">
+            <form id="petForm">
+                <div class="section" id="section-pet-info">
+                    <div class="d-flex justify-content-between align-items-center section-line" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="section-title">Pet Information</h3>
+                        <div class="section-buttons-wrapper" style="display:flex;">
+                            <button type="button" class="btn-add ms-2" id="btnTransferPet" style="display:none;">
+                                Transfer Pet to a New Owner
+                            </button>
+                            <button class="cta-button-edit section-edit-btn ms-2" type="button" id="btnEditSection">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="profile-grid">
+                        <div class="profile-image-container">
+                            <div class="profile-image">
+                                <img id="petImagePreview" src="assets/images/pet-avatar.png" alt="Pet Picture" />
+                                <div id="imageLoadingOverlay" class="image-loading-overlay" style="display:none">
+                                    <div class="loading-content">
+                                        <i class="fa-solid fa-spinner fa-spin"></i>
+                                        <span>Uploading...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profile-image-upload">
+                                <input type="file" id="fileInput" accept="image/*" hidden />
+                                <button type="button" class="upload-button" id="btnAddPhoto">Add Photo</button>
+                                <button type="button" class="remove-button" id="btnRemovePhoto">Remove</button>
+                            </div>
+
+                            <div class="chk-group-image">
+                                <div class="form-group">
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" id="isServiceAnimal" />
+                                        <span class="checkbox-label-text">Service Animal</span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" id="isESA" />
+                                        <span class="checkbox-label-text">Emotional Support Animal (ESA)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-wrapper">
+                            <div class="form-grid">
+                                <div class="form-row">
+
+                                    <div class="form-group">
+                                        <label>Pet&rsquo;s Name <span class="required-field">*</span></label>
+                                        <input id="name" type="text" placeholder="Enter first name" />
+                                        <div class="error-message" id="nameError" style="display:none">First name is required</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>
+                                            Last Name
+                                            <span class="tooltip-icon-petModel tooltip-icon-petModel--multiline"
+                                                  data-tooltip="Optional. If left blank, your pet will default to your account&rsquo;s last name. You may enter a different last name for shared or multi-household pets.">?</span>
+                                        </label>
+                                        <input id="lastName" type="text" placeholder="Enter last name" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Pet Type <span class="required-field">*</span></label>
+                                        <select id="petTypeId">
+                                            <option value="">Select pet type</option>
+                                        </select>
+                                        <div class="error-message" id="petTypeError" style="display:none">Pet Type is required</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Primary Breed <span class="required-field">*</span></label>
+                                        <select id="breedId">
+                                            <option value="">Select breed</option>
+                                        </select>
+                                        <div class="error-message" id="breedError" style="display:none">Breed is required</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>
+                                            Suggested Size
+                                            <span class="tooltip-icon-petModel tooltip-icon-petModel--multiline"
+                                                  data-tooltip="Auto-selected based on standard breed guidelines.&#10;If your pet falls outside the typical range, you may adjust.&#10;&#10;Toy: under 12 lbs&#10;Small: 15-30 lbs&#10;Medium: 30-60 lbs&#10;Large: 60-90 lbs&#10;Giant: 90+ lbs">?</span>
+                                        </label>
+                                        <select id="size">
+                                            <option value="">Select estimated size</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Weight (lbs.) <span class="required-field">*</span></label>
+                                        <input id="weight" type="number" min="0" placeholder="Enter weight (lbs.)" />
+                                        <div class="error-message" id="weightRequiredError" style="display:none">Weight is required</div>
+                                        <div class="error-message" id="weightMinError" style="display:none">Weight must be greater than 0</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Gender <span class="required-field">*</span></label>
+                                        <select id="gender">
+                                            <option value="">Select pet gender</option>
+                                        </select>
+                                        <div class="error-message" id="genderError" style="display:none">Pet gender is required</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Spayed/Neutered? <span class="required-field">*</span></label>
+                                        <select id="spayed">
+                                            <option value="">Select spayed/neutered</option>
+                                        </select>
+                                        <div class="error-message" id="spayedError" style="display:none">Spayed/Neutered is required</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Adoption Source <span class="required-field">*</span></label>
+                                        <select id="rescueBreeder">
+                                            <option value="">Select adoption source</option>
+                                        </select>
+                                        <div class="error-message" id="adoptionSourceError" style="display:none">Adoption Source is required</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Birth Date <span class="required-field" id="birthdateRequiredMark">*</span></label>
+                                        <div class="datepicker-wrapper">
+                                            <input id="birthdate" type="date" />
+                                        </div>
+                                        <div class="error-message" id="birthdateError" style="display:none">Birthdate is required</div>
+                                        <div style="margin-top: 0.5rem">
+                                            <label class="custom-checkbox">
+                                                <input type="checkbox" id="unknown" />
+                                                <span class="checkbox-label-text">(Check if Unknown)</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Estimated Age <span class="required-field" id="ageRequiredMark" style="display:none">*</span></label>
+                                        <input id="age" type="number" step="0.25" min="0" placeholder="Enter estimated age" />
+                                        <div class="error-message" id="ageError" style="display:none">Estimated Age is required</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Owned/Fostered <span class="required-field">*</span></label>
+                                        <select id="fostered">
+                                            <option value="">Select owned/fostered</option>
+                                        </select>
+                                        <div class="error-message" id="fosteredError" style="display:none">Owned/Fostered is required</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Known Ailments</label>
+                                        <select id="ailments" multiple>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>
+                                            Known Bloodline Ailments
+                                            <span class="tooltip-icon-petModel"
+                                                  data-tooltip="Know your pets geneology and/or family history? Recording that data here can help inform future pet health research and financial forecasts.">?</span>
+                                        </label>
+                                        <select id="petHistory">
+                                            <option value="">Select known bloodline ailments</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Pet Adoption Date</label>
+                                        <div class="datepicker-wrapper">
+                                            <input id="petAdaptationDate" type="date" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Microchip #</label>
+                                        <input id="microNumber" type="text" placeholder="Enter 9-15 digits Microchip #" maxlength="15" minlength="9" />
+                                        <div class="error-message" id="microNumberError" style="display:none">Microchip # should be 9-15 digits.</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Rabies Tag #</label>
+                                        <input id="tagNumber" type="text" placeholder="Enter Rabies Tag #" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>License ID # (City/Town)</label>
+                                        <input id="licenseId" type="text" placeholder="Enter License ID #" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Tags</label>
+                                        <select id="tags">
+                                            <option value="">Select tag</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mixed Breed Section -->
+                <div class="section" id="section-mixed-breed">
+                    <div class="section-line" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="section-title">Mixed Breed</h3>
+                        <div style="display:flex; align-items:center;">
+                            <button class="btn-add ms-2" type="button" id="btnAddBreedRow">Add Another Breed</button>
+                            <button class="cta-button-edit ms-2" type="button" id="btnEditMixedBreed">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3" style="margin: 1rem 0;">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="isMixBreed" />
+                            <span class="checkbox-label-text">My Pet is a mixed breed</span>
+                        </label>
+                    </div>
+
+                    <div class="table-responsive" id="mixedBreedTableWrapper" style="max-width: 500px; width: 100%; display:none;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><label>Breed</label></th>
+                                    <th style="width: 30%"><label>Percentage</label></th>
+                                    <th style="width: 1%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="breedTableBody">
+                                <!-- Rows added dynamically via JS: addBreedRow() -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td style="text-align:right"><label>Total:</label></td>
+                                    <td><label id="totalBreedPercentage">0%</label></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:right">
+                                        <div class="table-error-message" id="totalPercentageError" style="display:none">Percentage should be 100%</div>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Co-owners Section -->
+                <div class="section" id="section-co-owners">
+                    <div class="section-line" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="section-title">Co-owners</h3>
+                        <div style="display:flex; align-items:center;">
+                            <button class="cta-button-edit ms-2" type="button" id="btnEditCoOwners">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-table-wrapper">
+                        <div class="list-table-header" id="coOwnersHeader">
+                            <div class="list-col">Name</div>
+                            <div class="list-col">Email</div>
+                            <div class="list-col">Phone</div>
+                            <div class="list-col">Emergency Contact</div>
+                            <div class="list-col">Emergency Phone</div>
+                            <div class="list-col">Co-owner</div>
+                            <div class="list-col">Status</div>
+                            <div class="list-col list-col--actions">Actions</div>
+                        </div>
+                        <div id="coOwnersBody"></div>
+                        <div class="list-empty-state" id="coOwnersEmpty">
+                            <img src="assets/images/pet-avatar-group.svg" alt="" class="list-empty-icon" onerror="this.style.display='none'" />
+                            <div class="list-empty-text">There are no co-owners listed yet.</div>
+                            <a href="#" class="list-empty-link" id="btnAddCoOwnerLink">Add Co-owner</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vaccine Records Section -->
+                <div class="section" id="section-vaccine-records">
+                    <div class="section-line" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="section-title">Vaccine Records</h3>
+                        <div style="display:flex; align-items:center;">
+                            <button type="button" class="cta-button-edit ms-2 camera-btn" id="btnCameraVaccine" title="Upload a photo or PDF">
+                                <i class="fa-solid fa-camera"></i>
+                            </button>
+                            <button class="cta-button-edit ms-2" type="button" id="btnEditVaccines">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-table-wrapper">
+                        <div class="list-table-header">
+                            <div class="list-col list-col--chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                            <div class="list-col">Vaccine Name</div>
+                            <div class="list-col">Date Given</div>
+                            <div class="list-col">Next Due Date</div>
+                            <div class="list-col">Dose Type</div>
+                            <div class="list-col">Status</div>
+                            <div class="list-col">Logged By</div>
+                            <div class="list-col list-col--actions">Actions</div>
+                        </div>
+                        <div id="vaccineBody"></div>
+                        <div class="list-empty-state" id="vaccineEmpty">
+                            <i class="fa-solid fa-syringe list-empty-icon-font"></i>
+                            <div class="list-empty-text">There are no vaccine records listed yet.</div>
+                            <a href="#" class="list-empty-link" id="btnAddVaccineLink">Add a Vaccine Record</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medications Section -->
+                <div class="section" id="section-medications">
+                    <div class="section-line" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="section-title">Medications</h3>
+                        <div style="display:flex; align-items:center;">
+                            <button type="button" class="cta-button-edit ms-2 camera-btn" id="btnCameraMedication" title="Upload a photo or PDF">
+                                <i class="fa-solid fa-camera"></i>
+                            </button>
+                            <button class="cta-button-edit ms-2" type="button" id="btnEditMedications">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-table-wrapper">
+                        <div class="list-table-header">
+                            <div class="list-col list-col--chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                            <div class="list-col">Medication Name</div>
+                            <div class="list-col">Dosage</div>
+                            <div class="list-col">Frequency</div>
+                            <div class="list-col">Status</div>
+                            <div class="list-col">Next Order Date</div>
+                            <div class="list-col">Date Started</div>
+                            <div class="list-col">Logged By</div>
+                            <div class="list-col list-col--actions">Actions</div>
+                        </div>
+                        <div id="medicationBody"></div>
+                        <div class="list-empty-state" id="medicationEmpty">
+                            <i class="fa-solid fa-pills list-empty-icon-font"></i>
+                            <div class="list-empty-text">There are no medication listed yet.</div>
+                            <a href="#" class="list-empty-link" id="btnAddMedicationLink">Add Medication</a>
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+            </form>
+
+            <div class="btn-submit-container bottom-buttons">
+                <button type="submit" class="cta-button-submit" id="btnSubmitBottom">
+                    <span id="submitBottomLabel">Submit</span>
+                </button>
+                <button type="button" class="cta-button-edit bottom-edit-btn" id="btnEditBottom">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+            </div>
+
+            <div class="error-message bottom-validation-error" id="microNumberBottomError" style="display:none"></div>
+        </div>
+    </div>
+
+    <!-- Pet Calculator redirect modal -->
+    <div id="calcModalBackdrop" class="pet-modal-backdrop" style="display:none"></div>
+    <div id="calcModal" class="pet-modal-container-redirect-calc" style="display:none" role="dialog" aria-modal="true">
+        <div class="modal-content-redirect-calc">
+            <button class="close-redirect-calc" id="btnCloseCalcModal" aria-label="Close">X</button>
+            <div style="padding: 20px">
+                <div class="modal-icon-redirect-calc">
+                    <img style="height: 160px" src="assets/images/pet-success-celebration.svg" alt="status icon" />
+                </div>
+                <div class="modal-header-redirect-calc">Well done!</div>
+                <div class="modal-body-redirect-calc">Now let's calculate your pet cost.</div>
+                <div style="display:flex; gap:16px; justify-content:center;">
+                    <button class="btn-skip-redirect-calc" id="btnSkipCalc">Skip this for now</button>
+                    <button class="cta-button-submit" style="font-size: 14px" id="btnGoToCalc">Calculate My Pet Cost</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============== Owner / Co-owner Modal (Transfer + Associate + Invite) ============== -->
+    <div id="ownerModalOverlay" class="pet-transfer-modal-overlay" style="display:none">
+        <div class="pet-transfer-modal">
+            <div class="pet-transfer-modal-header">
+                <h3 class="pet-modal-title">Transfer Pet to a New Owner</h3>
+                <button class="pet-transfer-close-button" id="btnCloseOwnerModal">&times;</button>
+            </div>
+            <div class="pet-transfer-modal-body">
+                <div class="search-section">
+                    <label class="search-label">Search Registered User, email or phone number</label>
+                    <div class="search-wrapper">
+                        <input type="text" class="search-input" id="ownerSearchInput" placeholder="Type to search registered users..." />
+                        <div class="suggestions" id="ownerSuggestions" style="display:none"></div>
+                    </div>
+                    <div class="error-message" id="ownerSelectError" style="display:none">Owner selection is required</div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Full Name of Owner <span class="required-field">*</span></label>
+                    <input type="text" class="form-input" id="ownerSelectedName" readonly placeholder="Select owner from search above" />
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Email <span class="required-field">*</span></label>
+                    <input type="text" class="form-input" id="ownerSelectedEmail" readonly placeholder="Email will auto-populate" />
+                    <div class="error-message" id="ownerEmailError" style="display:none">Email is required</div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Reason for Transfer of Ownership <span class="required-field">*</span></label>
+                    <textarea class="form-input" id="transferReason" placeholder="Please state your reason" rows="4"></textarea>
+                    <div class="error-message" id="reasonError" style="display:none">Reason is required</div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="cancel-button" id="btnCancelTransfer">Cancel</button>
+                    <button type="button" class="invite-button" id="btnInviteNonRegisteredTransfer">Send Invite to non-registered user</button>
+                    <button type="button" class="save-button" id="btnSubmitTransfer">Transfer to new Pet Owner</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="associateModalOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title" id="associateModalTitle">Co-ownership</h2>
+                <button type="button" class="close-button" id="btnCloseAssociateModal"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <div class="search-section">
+                    <label class="search-label">Search Registered User</label>
+                    <div class="search-wrapper">
+                        <input type="text" class="search-input" id="associateSearchInput" placeholder="search by name, email or phone" />
+                        <div class="suggestions" id="associateSuggestions" style="display:none"></div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <label class="form-label">Full Name of Co-owner <span class="required-field">*</span></label>
+                    <input type="text" class="form-input" id="associateSelectedName" readonly placeholder="Select co-owner from search above" />
+                </div>
+                <div class="form-section">
+                    <label class="form-label">Email <span class="required-field">*</span></label>
+                    <input type="text" class="form-input" id="associateSelectedEmail" readonly placeholder="Email will auto-populate" />
+                    <div class="error-message" id="associateInviteError" style="display:none"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button" id="btnCancelAssociate">Cancel</button>
+                <button type="button" class="invite-button" id="btnInviteNonRegisteredAssociate">Invite New User by Email</button>
+                <button type="button" class="save-button" id="btnSubmitAssociate">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="inviteModalOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container" style="max-width: 480px">
+            <div class="modal-header">
+                <h2 class="modal-title">Send Invite</h2>
+                <button type="button" class="close-button" id="btnCloseInviteModal"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <div class="form-section">
+                    <label class="form-label">Email <span class="required-field">*</span></label>
+                    <input type="email" class="form-input" id="inviteEmailInput" placeholder="Enter email address" />
+                    <div class="error-message" id="inviteEmailError" style="display:none"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button" id="btnCancelInvite">Cancel</button>
+                <button type="button" class="save-button" id="btnSendInvite">Send Invite</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== Add / Edit Vaccine Record Modal ============== -->
+    <div id="vaccineModalOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container" style="max-width: 640px">
+            <div class="modal-header">
+                <h2 class="modal-title">Vaccine Records</h2>
+                <button type="button" class="close-button" id="btnCloseVaccineModal"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <p class="info-note">
+                    Note: Some jurisdictions legally require Rabies vaccination regardless of a positive titer result.
+                    Please consult your veterinarian or local regulations to ensure compliance.
+                    <a href="#" target="_blank">Click here for more information.</a>
+                </p>
+
+                <div class="toggle-container-no-margin" style="margin-bottom:1rem;">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="vaccineIsTiter" />
+                        <span class="checkbox-label-text">This is an antibody titer test instead of a vaccine.</span>
+                    </label>
+                    <div style="display:flex; align-items:center; gap:0.5rem; margin-left:auto;">
+                        <span class="toggle-label">Advanced</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="vaccineAdvancedToggle" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <p style="font-size:0.8rem; color:#6b7280; font-style:italic; margin-bottom:1rem;">
+                    Add as much detail as you can   it helps PetHSA improve care predictions and cost insights.
+                </p>
+
+                <div class="form-section">
+                    <label class="form-label">Vaccine Name <span class="required-field">*</span></label>
+                    <input type="text" class="form-input" id="vaccineName" placeholder="Enter Vaccine" />
+                </div>
+                <div class="form-section">
+                    <label class="form-label">Dose Type</label>
+                    <select class="form-input" id="vaccineDoseType">
+                        <option value="">Select Dosage</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Date Given <span class="required-field">*</span></label>
+                    <input type="date" class="form-input" id="vaccineDateGiven" />
+                </div>
+
+                <div class="toggle-container" style="margin-bottom:1rem;">
+                    <span class="toggle-label">Part of a series?</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="vaccinePartOfSeries" />
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-container" style="margin-bottom:1rem;">
+                    <span class="toggle-label">No future doses needed</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="vaccineNoFutureDoses" />
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="form-section" id="vaccineNextDueWrapper">
+                    <label class="form-label">Next Due Date</label>
+                    <input type="date" class="form-input" id="vaccineNextDueDate" />
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Administered By (Recommended)</label>
+                    <input type="text" class="form-input" id="vaccineAdministeredBy" placeholder="Enter administered by" />
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Price Paid (Recommended)</label>
+                    <div class="price-currency-row">
+                        <select class="form-input currency-select" id="vaccinePriceCurrency">
+                            <option value="USD">USD</option>
+                            <option value="CAD">CAD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                        <input type="number" min="0" step="0.01" class="form-input price-input" id="vaccinePricePaid" placeholder="Enter price paid" />
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Upload Report or Invoice</label>
+                    <input type="file" id="vaccineFileInput" accept="image/jpeg,image/png,image/heic,image/heif,.heic,.heif,application/pdf" multiple hidden />
+                    <button type="button" class="upload-btn" id="btnVaccineChooseFiles">
+                        <i class="fa-solid fa-upload"></i> Choose Files
+                    </button>
+                    <div class="file-hint">*Accepted files: .jpeg, .png, .pdf (Max 10MB each)</div>
+                    <div id="vaccineFileError" class="error-message" style="display:none"></div>
+                    <div id="vaccineFileDropArea" class="file-drop-area">
+                        <span id="vaccineFileDropText">No files selected</span>
+                    </div>
+                    <div id="vaccineFileList" class="uploaded-files-list" style="margin-top:0.5rem;"></div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Notes/Instruction</label>
+                    <textarea class="form-input" id="vaccineNotes" rows="3" placeholder="Enter any additional notes or instructions"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
+                <div class="disclaimer-box">
+                    <strong>Disclaimer:</strong> Sharing more details helps PetHSA deliver more accurate and
+                    personalized insights for your pet's care. None of your data is shared without your consent.
+                </div>
+                <div style="display:flex; justify-content:center; gap:12px;">
+                    <button type="button" class="cancel-button" id="btnCancelVaccine">Cancel</button>
+                    <button type="button" class="save-button" id="btnSaveVaccine">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== Add / Edit Medication Record Modal ============== -->
+    <div id="medicationModalOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container" style="max-width: 760px">
+            <div class="modal-header">
+                <h2 class="modal-title">Medication Records</h2>
+                <button type="button" class="close-button" id="btnCloseMedicationModal"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <p style="font-size:0.8rem; color:#6b7280; font-style:italic; margin-bottom:1rem;">
+                    Add as much detail as you can � it helps PetHSA improve care predictions and cost insights.
+                </p>
+
+                <div style="display:flex; flex-wrap:wrap; align-items:center; gap:2rem; margin-bottom:1.25rem;">
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                        <span class="toggle-label">Is this an ongoing medication?</span>
+                        <span class="tooltip-icon-petModel" data-tooltip="Turn this on if your pet will be taking this medication indefinitely, with no planned end date.">?</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="medicationIsOngoing" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                        <span class="toggle-label">Advanced</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="medicationAdvancedToggle" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                        <span class="toggle-label">Track Supply</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="medicationTrackSupply" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pet-modal-set-columns">
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">Medication Name <span class="required-field">*</span></label>
+                            <input type="text" class="form-input" id="medicationName" placeholder="Enter medication" />
+                        </div>
+                    </div>
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">Date Started</label>
+                            <input type="date" class="form-input" id="medicationDateStarted" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pet-modal-set-columns">
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">
+                                Dosage Amount
+                                <span class="tooltip-icon-petModel" data-tooltip="Enter the amount given per dose, e.g. 1 tablet or 5mg.">?</span>
+                            </label>
+                            <input type="text" class="form-input" id="medicationDosageAmount" placeholder="Enter dosage amount" />
+                        </div>
+                    </div>
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <div class="end-date-checkbox-row">
+                                <label class="form-label" style="margin-bottom:0;">End Date</label>
+                                <label class="custom-checkbox" style="font-size:0.8rem;">
+                                    <input type="checkbox" id="medicationNeverEnds" />
+                                    <span class="checkbox-label-text">Never / Indefinite</span>
+                                </label>
+                            </div>
+                            <input type="date" class="form-input" id="medicationEndDate" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pet-modal-set-columns">
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">
+                                Frequency Unit
+                                <span class="tooltip-icon-petModel" data-tooltip="How often this medication is given, e.g. Once daily, Twice daily, Weekly.">?</span>
+                            </label>
+                            <select class="form-input" id="medicationFrequencyUnit">
+                                <option value="">Select frequency unit</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">Prescribed By</label>
+                            <input type="text" class="form-input" id="medicationPrescribedBy" placeholder="Enter prescribed by" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pet-modal-set-columns">
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">
+                                Administration Method
+                                <span class="tooltip-icon-petModel" data-tooltip="How the medication is given, e.g. Oral, Topical, Injection.">?</span>
+                            </label>
+                            <select class="form-input" id="medicationAdminMethod">
+                                <option value="">Select method</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">
+                                Price Paid (Recommended)
+                                <span class="tooltip-icon-petModel" data-tooltip="Optional. Helps PetHSA build more accurate cost predictions for pets like yours.">?</span>
+                            </label>
+                            <div class="price-currency-row">
+                                <select class="form-input currency-select" id="medicationPriceCurrency">
+                                    <option value="USD">USD</option>
+                                    <option value="CAD">CAD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                </select>
+                                <input type="number" min="0" step="0.01" class="form-input price-input" id="medicationPricePaid" placeholder="Enter price paid" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pet-modal-set-columns">
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">
+                                Administration Conditions
+                                <span class="tooltip-icon-petModel" data-tooltip="Any special conditions for giving this medication, e.g. With food, On empty stomach.">?</span>
+                            </label>
+                            <select class="form-input" id="medicationAdminConditions">
+                                <option value="">Select medication condition</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pet-modal-column">
+                        <div class="form-section">
+                            <label class="form-label">
+                                Reason for Medication (Recommended)
+                                <span class="tooltip-icon-petModel" data-tooltip="Why this medication was prescribed, e.g. Allergies, Pain management.">?</span>
+                            </label>
+                            <textarea class="form-input" id="medicationReason" rows="3" placeholder="Enter reason for medication"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section" id="medicationSupplyWrapper" style="display:none;">
+                    <label class="form-label">Current Supply on Hand</label>
+                    <input type="number" min="0" class="form-input" id="medicationCurrentSupply" placeholder="Enter current supply" />
+                </div>
+            </div>
+            <div class="modal-footer" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
+                <div class="disclaimer-box">
+                    <strong>Disclaimer:</strong> Sharing more details helps PetHSA deliver more accurate and
+                    personalized insights for your pet's care. None of your data is shared without your consent.
+                </div>
+                <div style="display:flex; justify-content:center; gap:12px;">
+                    <button type="button" class="cancel-button" id="btnCancelMedication">Cancel</button>
+                    <button type="button" class="save-button" id="btnSaveMedication">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="docPreviewOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container" style="max-width: 980px; max-height:80vh;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="docPreviewFileName" style="font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></h2>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="cancel-button" id="btnDocPreviewDownload">Download</button>
+                    <button type="button" class="close-button" id="btnCloseDocPreview"><i class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+            <div class="modal-content" id="docPreviewBody" style="min-height:300px;">
+                <!-- filled dynamically: image / iframe / text / fallback -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== Document Tag Modal (link file to a pet record) ============== -->
+    <div id="docTagOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container" style="max-width: 700px">
+            <div class="modal-header">
+                <h2 class="modal-title">Tag document</h2>
+                <button type="button" class="close-button" id="btnCloseDocTag"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <p><strong>File:</strong> <span id="docTagFileName"></span></p>
+
+                <div class="form-section">
+                    <label class="form-label">Link to record type</label>
+                    <select class="form-input" id="docTagRecordType">
+                        <option value="">  Select  </option>
+                        <option value="incident">Pet Incident</option>
+                        <option value="vaccine">Pet Vaccine</option>
+                        <option value="medication">Pet Medication</option>
+                    </select>
+                </div>
+
+                <div id="docTagTableWrap"></div>
+                <p class="tag-modal-empty" id="docTagEmptyMsg" style="display:none;">No records found.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button" id="btnCancelDocTag">Cancel</button>
+                <button type="button" class="save-button" id="btnLinkDocTag" disabled>Link document</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== Tagged / Linked Documents Modal ============== -->
+    <div id="taggedDocsOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container" style="max-width: 700px">
+            <div class="modal-header">
+                <h2 class="modal-title">Attachments and Linked Documents</h2>
+                <button type="button" class="close-button" id="btnCloseTaggedDocs"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <div id="taggedDocsIntro" style="display:none; margin-bottom:1rem; font-size:0.85rem; color:#6b7280;">
+                    <span>Record</span> <strong id="taggedDocsTitleSuffix"></strong>
+                </div>
+                <div id="taggedDocsList"></div>
+                <div class="list-empty-state" id="taggedDocsEmpty" style="display:none;">
+                    <div class="list-empty-text">No linked documents</div>
+                    <div style="font-size:0.8rem; color:#9ca3af;">No documents are linked to this record.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button" id="btnCloseTaggedDocsFooter">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== Vaccine Attachments (uploaded files) Modal ============== -->
+    <div id="vaccineAttachOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container" style="max-width: 700px">
+            <div class="modal-header">
+                <h2 class="modal-title">Uploaded files</h2>
+                <button type="button" class="close-button" id="btnCloseVaccineAttach"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <div id="vaccineAttachTitleSuffix" style="display:none; margin-bottom:1rem; font-size:0.85rem; color:#6b7280;"></div>
+                <div id="vaccineAttachList"></div>
+                <div class="list-empty-state" id="vaccineAttachEmpty" style="display:none;">
+                    <div class="list-empty-text">No uploaded files</div>
+                    <div style="font-size:0.8rem; color:#9ca3af;">No files were uploaded for this vaccine record.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button" id="btnCloseVaccineAttachFooter">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file inputs for the camera/upload buttons. `capture="environment"` opens the
+         rear camera directly on mobile; `.heic`/`.heif` + `image/heic` are included so iPhone
+         photos (which default to HEIC format) show up as selectable files. -->
+    <input type="file" id="vaccineCameraInput" accept="image/jpeg,image/png,image/heic,image/heif,.heic,.heif,application/pdf" capture="environment" hidden />
+    <input type="file" id="medicationCameraInput" accept="image/jpeg,image/png,image/heic,image/heif,.heic,.heif,application/pdf" capture="environment" hidden />
+
+    <!-- ============== Quick Capture Modal (photo / PDF upload, shared by Vaccine + Medication camera buttons) ============== -->
+    <div id="quickCaptureOverlay" class="modal-overlay" style="display:none">
+        <div class="modal-container" style="max-width: 520px">
+            <div class="modal-header">
+                <h2 class="modal-title" id="quickCaptureTitle">Add Vaccine Record</h2>
+                <button type="button" class="close-button" id="btnCloseQuickCapture"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <div class="form-section">
+                    <label class="form-label">Price Paid (Recommended)</label>
+                    <div class="price-currency-row">
+                        <select class="form-input currency-select" id="quickCaptureCurrency">
+                            <option value="USD">USD</option>
+                            <option value="CAD">CAD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                        <input type="number" min="0" step="0.01" class="form-input price-input" id="quickCapturePrice" placeholder="Enter price paid" />
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Upload Report or Invoice</label>
+                    <button type="button" class="upload-btn" id="btnQuickCaptureChooseFiles">
+                        <i class="fa-solid fa-upload"></i> Choose Files
+                    </button>
+                    <div class="file-hint">*Accepted files: .jpeg, .png, .pdf, and iPhone .heic/.heif photos (Max 10MB each)</div>
+                    <div id="quickCaptureFileError" class="error-message" style="display:none"></div>
+                    <div id="quickCaptureFileList" class="uploaded-files-list" style="margin-top:0.75rem;"></div>
+                </div>
+                <div id="quickCaptureProgress" style="display:none; margin-top:1rem;">
+                    <div style="font-size:0.85rem; color:#4b5563; margin-bottom:0.4rem;">Processing receipt&hellip; this can take up to a minute.</div>
+                    <div style="height:8px; border-radius:4px; background:#e5e7eb; overflow:hidden;">
+                        <div id="quickCaptureProgressBar" style="height:100%; width:40%; border-radius:4px; background:#1e3a8a; animation: quickCaptureProgressSlide 1.2s ease-in-out infinite;"></div>
+                    </div>
+                </div>
+            </div>
+            <style>
+                @keyframes quickCaptureProgressSlide {
+                    0% {
+                        margin-left: 0%;
+                        width: 20%;
+                    }
+
+                    50% {
+                        margin-left: 60%;
+                        width: 40%;
+                    }
+
+                    100% {
+                        margin-left: 0%;
+                        width: 20%;
+                    }
+                }
+            </style>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button" id="btnCancelQuickCapture">Cancel</button>
+                <button type="button" class="save-button" id="btnSaveQuickCapture">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="pet_profile.js"></script>
+</body>
+</html>
